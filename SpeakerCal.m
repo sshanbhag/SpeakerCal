@@ -195,7 +195,7 @@ function SpeakerCal_OpeningFcn(hObject, eventdata, handles, varargin)
 		cal.MicSensitivity = 1.0;
 		% Filter Settings
 		cal.InputFilter = 1;
-		cal.LoPassFc = 45000;
+		cal.LoPassFc = 49000;
 		cal.HiPassFc = 120;
 
 		% Save defaults if instructed
@@ -345,9 +345,7 @@ function Abort_ctrl_Callback(hObject, eventdata, handles)
 % Save the data 
 function SaveCalibration_Callback(hObject, eventdata, handles)
 	if handles.CalComplete
-		odir = [		'C:\TytoLogy\TytoLogySettings\' ...
-						getenv('USERNAME') ...
-						'\CalibrationData\'];
+		odir = ['C:\TytoLogy\Calibration\CalibrationData\' getenv('USERNAME')];
 		if ~exist(odir, 'dir')
 			fprintf('%s: creating directory:\n\t%s\n', mfilename, odir);
 			mkdir(odir)
