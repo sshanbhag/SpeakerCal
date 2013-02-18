@@ -98,6 +98,7 @@ RPsettag(iodev, 'AcqDur', ms2samples(cal.AcqDuration, iodev.Fs));
 RPsettag(iodev, 'TTLPulseDur', ms2samples(cal.TTLPulseDur, iodev.Fs));
 %Setup filtering if desired
 if cal.InputFilter
-	RPsettag(iodev, 'HPFreq', cal.InputFc);
+	RPsettag(iodev, 'HPFreq', cal.HiPassFc);
+	RPsettag(iodev, 'LPFreq', cal.LoPassFc);
 end
 TDTINIT = 1;

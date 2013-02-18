@@ -177,9 +177,9 @@ for freq = F(1):F(2):F(3)
 		% apply the sin^2 amplitude envelope to the stimulus
 		S = sin2array(S, cal.StimRamp, iodev.Fs);
 		% plot the array
-		axes(handles.Lstimplot); %#ok<LAXES>
+		axes(handles.Lstimplot); 
 		plot(tvec, downsample(S(1, :), deciFactor), 'g');
-		axes(handles.Rstimplot); %#ok<LAXES>
+		axes(handles.Rstimplot); 
 		plot(zerostim, 'r');
 
 
@@ -239,9 +239,9 @@ for freq = F(1):F(2):F(3)
 			end
 
 			% plot the response
-			axes(handles.Lmicplot); %#ok<LAXES>
+			axes(handles.Lmicplot); 
 			plot(downsample(resp{L}(stim_start:stim_end), deciFactor), 'g');
-			axes(handles.Rmicplot); %#ok<LAXES>
+			axes(handles.Rmicplot); 
 			plot(downsample(resp{R}(stim_start:stim_end), deciFactor), 'r');
 		end
 
@@ -314,7 +314,7 @@ for freq = F(1):F(2):F(3)
 
 			% if DEBUG is set, save the raw magnitude and phase values
 			if DEBUG
-				magsdbug{L}(freq_index, rep) = lmag;
+				magsdbug{L}(freq_index, rep) = lmag; %#ok<UNRCH>
 				phisdbug{L}(freq_index, rep) = lphi;
 
 				if cal.CheckCal == L
@@ -327,9 +327,9 @@ for freq = F(1):F(2):F(3)
 			end
 
 			% plot the response
-			axes(handles.Lmicplot); %#ok<LAXES>
+			axes(handles.Lmicplot); 
 			plot(downsample(resp{L}(stim_start:stim_end), deciFactor), 'g');
-			axes(handles.Rmicplot); %#ok<LAXES>
+			axes(handles.Rmicplot); 
 			plot(downsample(resp{R}(stim_start:stim_end), deciFactor), 'r');
 
 			update_ui_str(handles.LVal, sprintf('%.4f', lmag));
@@ -474,7 +474,7 @@ for freq = F(1):F(2):F(3)
 
 			% if DEBUG is set, save the raw magnitude and phase values
 			if DEBUG
-				magsdbug{R}(freq_index, rep) = rmag;
+				magsdbug{R}(freq_index, rep) = rmag; %#ok<UNRCH>
 				phisdbug{R}(freq_index, rep) = rphi;
 
 				if cal.CheckCal == R
@@ -586,7 +586,7 @@ caldata.magsraw = magsraw;
 caldata.atten = atten;
 
 if DEBUG
-	caldata.magsdbug = magsdbug;
+	caldata.magsdbug = magsdbug; %#ok<UNRCH>
 	caldata.phisdbug = phisdbug;
 end
 
