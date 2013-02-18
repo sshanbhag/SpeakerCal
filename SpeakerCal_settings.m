@@ -37,6 +37,7 @@ if handles.AssumeFlatMic
 else
 	load(handles.cal.mic_fr_file, 'frdata');
 	if ~isfield(frdata, 'DAscale')
+		% fix quirky frdata
 		frdata.DAscale = frdata.calsettings.DAscale;
 	end
 	handles.cal.mic_fr = frdata;
@@ -101,6 +102,20 @@ handles.cal.InputFilter = 1;
 handles.cal.InputFc = 120;
 %TTL pulse duration (msec)
 handles.cal.TTLPulseDur = 1;
+
+if ~handles.AssumeFlatMic
+	% is frequency in range of the fr data for the headphones?
+	% check low freq limit
+	if F(1) < frdata.range(1)
+		warning([mfilename ': requested LF calibration limit is out of FR file bounds']);
+		return
+	end
+	% check high freq limit
+	if F(3) > frdata.range(3)
+		warning([mfilename ': requested HF calibration limit is out of FR file bounds']);
+		return
+	end
+end
 
 %---------------------------------------------------------------
 %---------------------------------------------------------------

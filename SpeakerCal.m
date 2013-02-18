@@ -248,8 +248,8 @@ function SpeakerCal_OpeningFcn(hObject, eventdata, handles, varargin)
 	%---------------------------------------------------------------
 	%---------------------------------------------------------------
 		% set this to wherever the circuits are stored
-		iodev.Circuit_Path = 'C:\TytoLogy\Toolbox\TDTToolbox\Circuits\RXZ6\50KHz';
-		iodev.Circuit_Name = 'RZ6_SpeakerOutput_zBus';
+		iodev.Circuit_Path = 'C:\TytoLogy\Toolbox\TDTToolbox\Circuits\RZ6';
+		iodev.Circuit_Name = 'RZ6_CalibrateIO_softTrig';
 		iodev.REF = 0;
 		iodev.status = 0;
 		% Dnum = device number - this is for RZ6 (1)

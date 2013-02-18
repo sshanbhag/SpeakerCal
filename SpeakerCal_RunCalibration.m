@@ -66,23 +66,6 @@ cal = handles.cal;
 
 %---------------------------------------------------------------
 %---------------------------------------------------------------
-% Some checks and balances
-%---------------------------------------------------------------
-%---------------------------------------------------------------
-% is frequency in range of the fr data for the headphones?
-% check low freq limit
-if F(1) < frdata.range(1)
-	warning([mfilename ': requested LF calibration limit is out of FR file bounds']);
-	return
-end
-% check high freq limit
-if F(3) > frdata.range(3)
-	warning([mfilename ': requested HF calibration limit is out of FR file bounds']);
-	return
-end
-
-%---------------------------------------------------------------
-%---------------------------------------------------------------
 % Start TDT things
 %---------------------------------------------------------------
 %---------------------------------------------------------------
@@ -199,6 +182,8 @@ for freq = F(1):F(2):F(3)
 		axes(handles.Rstimplot); %#ok<LAXES>
 		plot(zerostim, 'r');
 
+
+		
 		%loop while figuring out the L attenuator value.
 		if cal.AttenFix
 			% no need to test attenuation but, 
@@ -212,7 +197,7 @@ for freq = F(1):F(2):F(3)
 		else
 			retry = 1;
 		end
-
+		
 		while retry
 			% need to set the attenuators
 			PA5setatten(PA5L, Latten);

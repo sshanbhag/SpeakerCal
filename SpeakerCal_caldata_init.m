@@ -27,7 +27,6 @@ caldata.nrasters = Nfreqs;							% number of freqs to collect
 caldata.range = F;									% freq range (matlab string)
 caldata.reps = cal.Nreps;							% reps per frequency
 caldata.settings = cal;
-caldata.frdata = frdata;
 caldata.atten = cal.StartAtten;					% initial attenuator setting
 caldata.max_spl = cal.Maxlevel;					% maximum spl
 caldata.min_spl = cal.Minlevel;					% minimum spl
@@ -65,6 +64,7 @@ else
 	frdata.rphiadjval = interp1(frdata.freq, frdata.radjphi, caldata.freq);	
 end
 caldata.DAscale = frdata.DAscale;
+caldata.frdata = frdata;
 
 if DEBUG
 	magsdbug = mags;
