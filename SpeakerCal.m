@@ -12,7 +12,6 @@ function varargout = SpeakerCal(varargin)
 %      SPEAKERCAL('Property','Value',...) creates a new SPEAKERCAL or raises the
 %      existing singleton*.  
 %
-
 %-------------------------------------------------------------------------
 % Calibration Algorithm:
 % 
@@ -302,7 +301,7 @@ function SpeakerCal_OpeningFcn(hObject, eventdata, handles, varargin)
 % Main Calibration callback
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
-function RunCalibration_ctrl_Callback(hObject, eventdata, handles)
+function RunCalibration_ctrl_Callback(hObject, eventdata, handles) %#ok<*INUSL>
 	set(handles.RunCalibration_ctrl, 'Enable', 'off');
 	set(handles.Abort_ctrl, 'Enable', 'on');
 	set(handles.Abort_ctrl, 'Visible', 'on');
@@ -397,8 +396,8 @@ function Fmin_Callback(hObject, eventdata, handles)
 %-------------------------------------------------------------------------
 function Fmax_Callback(hObject, eventdata, handles)
 	tmp = read_ui_str(hObject, 'n');
-	if ~between(tmp, handles.cal.Fmin, 22000)
-		warndlg('Max Freq must be between Fmin & 22,000', ...
+	if ~between(tmp, handles.cal.Fmin, 50000)
+		warndlg('Max Freq must be between Fmin & 50,000', ...
 						'Invalid Max Freq');
 		update_ui_str(hObject, handles.cal.Fmax);
 	else
@@ -427,7 +426,7 @@ function Fstep_Callback(hObject, eventdata, handles)
 function StimAmplitude_Callback(hObject, eventdata, handles)
 	tmp = read_ui_str(handles.StimAmplitude, 'n');
 	if ~between(tmp, 1e-6, 10)
-		warndlg('signal amplitude must be between 0 and 10 V', ...
+		warndlg('Peak signal amplitude must be between 0 and 10 V', ...
 					'Invalid Signal Amplitude');
 		update_ui_str(hObject, handles.cal.StimAmplitude);
 	else
