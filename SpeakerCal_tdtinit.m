@@ -30,9 +30,12 @@ iodev.status = tmpdev.status;
 % Initialize PA5 attenuators (left = 1 and right = 2)
 PA5L = PA5init('GB', 1);
 PA5R = PA5init('GB', 2);
-% if cal.CheckCal
-% 	iodev.REF = 3;
-% end
+
+if cal.CheckCal
+	iodev.REF = 3;
+else
+	iodev.REF = 0;
+end
 
 %---------------------------------------------------------------
 %---------------------------------------------------------------
@@ -92,9 +95,10 @@ RPsettag(iodev, 'StimDur', ms2samples(cal.StimDuration, iodev.Fs));
 % Set the length of time to acquire data
 RPsettag(iodev, 'AcqDur', ms2samples(cal.AcqDuration, iodev.Fs));
 % set the ttl pulse duration
-RPsettag(iodev, 'PulseDur', ms2samples(cal.TTLPulseDur, iodev.Fs));
+RPsettag(iodev, 'TTLPulseDur', ms2samples(cal.TTLPulseDur, iodev.Fs));
 %Setup filtering if desired
 if cal.InputFilter
-	RPsettag(iodev, 'HPFreq', cal.InputFc);
+	RPsettag(iodev, 'HPFreq', cal.HiPassFc);
+	RPsettag(iodev, 'LPFreq', cal.LoPassFc);
 end
 TDTINIT = 1;
