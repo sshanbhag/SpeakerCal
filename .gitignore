@@ -14,3 +14,9 @@ Desktop.ini
 
 # .asv files
 *.asv
+
+% no matfiles in this folder!!!!
+*.mat
+
+% no dat files here either!
+*.dat
