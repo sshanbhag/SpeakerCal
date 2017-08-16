@@ -34,12 +34,31 @@
 % 		  measuring fr more accurately
 % 	19 June, 2009 (SJS): added documentation, ran Mlint profiler
 % 	18 Feb, 2013 (SJS): adapting for SpeakerCal
+%   16 Aug 2017 (SJS): troubleshooting amplitude miscalibration
+%       - cleaning up some things, adding comments
 %--------------------------------------------------------------------------
+
+%{
+Sequence of things:
+
+define constants
+
+run initialization scripts
+
+(1) SpeakerCal_settings
+(2) SpeakerCal_tdtinit
+(3) SpeakerCal_caldata_init
+%}
+
 
 %---------------------------------------------------------------
 %---------------------------------------------------------------
-% Global Constants
+% Set values for constants and other things
 %---------------------------------------------------------------
+%---------------------------------------------------------------
+
+%---------------------------------------------------------------
+% Global Constants
 %---------------------------------------------------------------
 L = 1;
 R = 2;
@@ -49,14 +68,17 @@ REFL = 3;
 REFR = 4;
 MAX_ATTEN = 120;
 DEBUG = 0;
+%---------------------------------------------------------------
+% other things
+%---------------------------------------------------------------
+% set the COMPLETE flag to 0
+COMPLETE = 0;
 	
 %---------------------------------------------------------------
 %---------------------------------------------------------------
 % Initialization Scripts
 %---------------------------------------------------------------
 %---------------------------------------------------------------
-% set the COMPLETE flag to 0
-COMPLETE = 0;
 % Load the settings and constants 
 SpeakerCal_settings;
 % save the GUI handle information
@@ -77,7 +99,7 @@ SpeakerCal_tdtinit;
 %---------------------------------------------------------------
 %---------------------------------------------------------------
 SpeakerCal_caldata_init;
-% set the FRANGE output scale value (usually 5 V)
+% set the FRANGE output scale value from caldata.DAscal
 FRANGE = caldata.DAscale;
 
 %---------------------------------------------------------------
@@ -181,8 +203,6 @@ for freq = F(1):F(2):F(3)
 		plot(tvec, downsample(S(1, :), deciFactor), 'g');
 		axes(handles.Rstimplot); 
 		plot(zerostim, 'r');
-
-
 		
 		%loop while figuring out the L attenuator value.
 		if cal.AttenFix

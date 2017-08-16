@@ -14,7 +14,7 @@
 % Revisions:
 %--------------------------------------------------------------------------
 
-disp('...general setup starting...');
+disp([mfilename ': ...general setup starting...']);
 
 %---------------------------------------------------------------
 %---------------------------------------------------------------
@@ -29,29 +29,37 @@ MAX_ATTEN = 120;
 
 %---------------------------------------------------------------
 %---------------------------------------------------------------
-% Load Microphone calibration data
+% Load Microphone calibration data if AssumeFlatMic is 0 (UseFR == 1) 
 %---------------------------------------------------------------
 %---------------------------------------------------------------
 if handles.AssumeFlatMic
+	% if AssumeFlatMic == 1, then a calibration mic is in use, and
+	% user is free to chose output level (DAscale). In other words,
+	% use the value set by user and stored in handles.cal.StimAmplitude.
 	DAscale = handles.cal.StimAmplitude;
+	fprintf('%s: DAscale = StimAmplitude (%.2f)\n', mfilename, DAscale);
 else
+	% not using calibration microphone, so need to use same output peak
+	% level as was used to generate the fr data. Get this value from 
+	% frdata struct (frdata.DAscal)
 	load(handles.cal.mic_fr_file, 'frdata');
 	if ~isfield(frdata, 'DAscale')
 		% fix quirky frdata
 		frdata.DAscale = frdata.calsettings.DAscale;
 	end
 	handles.cal.mic_fr = frdata;
+	DAscale = frdata.DAscale;
+	fprintf('%s: DAscale = frdata.DAscale (%.2f)\n', mfilename, DAscale);
 end
 	
 %---------------------------------------------------------------
 %---------------------------------------------------------------
-% set global settings
+% global settings
 %---------------------------------------------------------------
 %---------------------------------------------------------------
 earcalpath = pwd;
 earcalfile = [earcalpath '\ear.cal'];
 deciFactor = 1;
-
 if handles.AssumeFlatMic
 	% read in the gain on the mic preamp
 	Gain_dB = [0 0];
@@ -103,6 +111,8 @@ handles.cal.InputFc = 120;
 %TTL pulse duration (msec)
 handles.cal.TTLPulseDur = 1;
 
+% if not using calibration microphone, need to ensure that there is frdata
+% for the requested calibration frequency range
 if ~handles.AssumeFlatMic
 	% is frequency in range of the fr data for the headphones?
 	% check low freq limit

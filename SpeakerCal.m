@@ -37,7 +37,7 @@ function varargout = SpeakerCal(varargin)
 % 
 %-------------------------------------------------------------------------
 
-% Last Modified by GUIDE v2.5 18-Feb-2013 15:14:00
+% Last Modified by GUIDE v2.5 16-Aug-2017 15:21:59
 
 % Begin initialization code - DO NOT EDIT
 	gui_Singleton = 1;
@@ -139,7 +139,6 @@ function SpeakerCal_OpeningFcn(hObject, eventdata, handles, varargin)
 % 		addpath(['C:\Users\sshanbhag\Code\Matlab\TytoLogy\TytoLogySettings\'	getenv('USERNAME')]);
 	end
 
-	
 	%---------------------------------------------------------------
 	%---------------------------------------------------------------
 	% Initial Calibration settings
@@ -203,7 +202,8 @@ function SpeakerCal_OpeningFcn(hObject, eventdata, handles, varargin)
 		end
 
 	else
-		fprintf('Loading cal settings from defaults file %s ...\n', defaultsfile)
+		fprintf('Loading cal settings from defaults file %s ...\n', ...
+                                                            defaultsfile)
 		load(defaultsfile, 'cal');
 	end
 	%------------------------------------------------------------
@@ -249,8 +249,11 @@ function SpeakerCal_OpeningFcn(hObject, eventdata, handles, varargin)
 	update_ui_val(handles.UseFRCtrl, handles.cal.UseFR);
 	update_ui_str(handles.MicFRPathCtrl, handles.cal.mic_fr_path);
 	update_ui_str(handles.MicFRFileCtrl, handles.cal.mic_fr_file);
-	update_ui_val(handles.StimAmplitude, handles.cal.StimAmplitude);
-	update_ui_val(handles.MicSensitivity, handles.cal.MicSensitivity);
+	update_ui_str(handles.StimAmplitude, handles.cal.StimAmplitude);
+	update_ui_str(handles.MicSensitivity, handles.cal.MicSensitivity);
+    % UseFR is 1 if an fr (frequency response) file or data is used -
+    % this is the case if a non-calibration microphone (i.e., not-flat-
+    % response) will be used for the measurement
 	if handles.cal.UseFR
 		handles.AssumeFlatMic = 0;
 	else
@@ -329,7 +332,7 @@ function RunCalibration_ctrl_Callback(hObject, eventdata, handles) %#ok<*INUSL>
 %--------------------------------------------------------------------------
 
 %--------------------------------------------------------------------------
-function Abort_ctrl_Callback(hObject, eventdata, handles)
+function Abort_ctrl_Callback(hObject, eventdata, handles) %#ok<*DEFNU>
 	disp('ABORTING Calibration!')
 %--------------------------------------------------------------------------
 %-------------------------------------------------------------------------
@@ -344,7 +347,8 @@ function Abort_ctrl_Callback(hObject, eventdata, handles)
 % Save the data 
 function SaveCalibration_Callback(hObject, eventdata, handles)
 	if handles.CalComplete
-		odir = ['C:\TytoLogy\Calibration\CalibrationData\' getenv('USERNAME')];
+		odir = ['C:\TytoLogy\Calibration\CalibrationData\' ...
+                        getenv('USERNAME')];
 		if ~exist(odir, 'dir')
 			fprintf('%s: creating directory:\n\t%s\n', mfilename, odir);
 			mkdir(odir)
@@ -355,7 +359,7 @@ function SaveCalibration_Callback(hObject, eventdata, handles)
 		if calfile ~= 0
 			% save the sequence so we can match up with the RF data
 			datafile = fullfile(calpath, calfile);
-			caldata = handles.caldata;
+			caldata = handles.caldata; %#ok<NASGU>
 			save(datafile, '-MAT', 'caldata');
 		end
 	end
@@ -605,6 +609,11 @@ function MicFRPathCtrl_Callback(hObject, eventdata, handles)
 %--------------------------------------------------------------------------
 function UseFRCtrl_Callback(hObject, eventdata, handles)
 	handles.cal.UseFR = read_ui_val(hObject);
+	if handles.cal.UseFR
+		handles.AssumeFlatMic = 0;
+	else
+		handles.AssumeFlatMic = 1;
+	end
 	guidata(hObject, handles);
 %--------------------------------------------------------------------------
 %-------------------------------------------------------------------------
@@ -637,11 +646,12 @@ function MicFRFileCtrl_Callback(hObject, eventdata, handles)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %--------------------------------------------------------------------------
 function Menu_SaveCal_Callback(hObject, eventdata, handles)
-	[calfile, calpath] = uiputfile('*_cal.mat','Save headphone calibration data in file');
+	[calfile, calpath] = uiputfile('*_cal.mat', ...
+                                'Save headphone calibration data in file');
 	if calfile ~= 0
 		% save the sequence so we can match up with the RF data
 		datafile = fullfile(calpath, calfile);
-		caldata = handles.caldata;
+		caldata = handles.caldata; %#ok<NASGU>
 		save(datafile, '-MAT', 'caldata');
 	end
 %--------------------------------------------------------------------------
@@ -649,7 +659,8 @@ function Menu_SaveCal_Callback(hObject, eventdata, handles)
 %--------------------------------------------------------------------------
 function Menu_LoadFRData_Callback(hObject, eventdata, handles)
 	% get the fr file data
-	[frfile, frpath] = uigetfile('*_fr.mat', 'Load FR data for earphones...');
+	[frfile, frpath] = uigetfile('*_fr.mat', ...
+                                        'Load FR data for earphones...');
 	if frfile ~= 0
 		handles.cal.mic_fr_file = fullfile(frpath, frfile);
 		load(handles.cal.mic_fr_file, 'frdata');
@@ -664,25 +675,26 @@ function Menu_Close_Callback(hObject, eventdata, handles)
  	CloseRequestFcn(handles.figure1, eventdata, handles);
 %--------------------------------------------------------------------------
 
-
 %-------------------------------------------------------------------------
 function TDTSettingsMenuCtrl_Callback(hObject, eventdata, handles)
 	iodev = handles.iodev;
-	fullcircuit = fullfile(iodev.Circuit_Path, [iodev.Circuit_Name '.rcx'])
+	fullcircuit = fullfile(iodev.Circuit_Path, ...
+                                [iodev.Circuit_Name '.rcx']);
 	if ~exist(fullcircuit, 'file')
 		warning('%s: circuit %s not found...', mfilename, fullcircuit)
-		[fname, pname] = uigetfile('*.rcx', 'Select TDT RPvD circuit file');
+		[fname, pname] = uigetfile('*.rcx', ...
+                                        'Select TDT RPvD circuit file');
 		if fname == 0
 			% user cancelled request
 			return
 		end
 		% need to strip off .rcx from filename
-		[tmp1, fname, fext, tmp2] = fileparts(fname)
+		[tmp1, fname, fext, tmp2] = fileparts(fname); %#ok<ASGLU>
 		iodev.Circuit_Name = fname;
 		iodev.Circuit_Path = pname;
 		handles.iodev = iodev;
 		guidata(hObject, handles);
-		iodev
+		iodev %#ok<NOPRT>
 		
 	else
 		[fname, pname] = uigetfile('*.rcx', ...
@@ -693,15 +705,29 @@ function TDTSettingsMenuCtrl_Callback(hObject, eventdata, handles)
 			return
 		end
 		% need to strip off .rcx from filename
-		[tmp1, fname, fext, tmp2] = fileparts(fname);
+		[tmp1, fname, fext, tmp2] = fileparts(fname); %#ok<ASGLU>
 		iodev.Circuit_Name = fname;
 		iodev.Circuit_Path = pname;
 		handles.iodev = iodev;
 		guidata(hObject, handles);
-		iodev
+		iodev %#ok<NOPRT>
 	end
 %-------------------------------------------------------------------------
 
+%--------------------------------------------------------------------
+function SaveDefaults_menu_Callback(hObject, eventdata, handles)
+	cal = handles.cal; %#ok<NASGU>
+	fprintf('Writing default settings struct cal to file %s\n', ...
+					handles.defaultsfile)
+	save(handles.defaultsfile, 'cal');
+%--------------------------------------------------------------------
+%--------------------------------------------------------------------
+function LoadDefaults_menu_Callback(hObject, eventdata, handles)
+	fprintf('Loading cal settings from defaults file %s ...\n', ...
+																	handles.defaultsfile)
+	load(handles.defaultsfile, 'cal');
+	update_GUI_from_cal(handles);
+%--------------------------------------------------------------------
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -714,13 +740,16 @@ function varargout = SpeakerCal_OutputFcn(hObject, eventdata, handles)
 	% Get default command line output from handles structure
 	varargout{1} = handles.output;
 %--------------------------------------------------------------------------
-
 %--------------------------------------------------------------------------
 function CloseRequestFcn(hObject, eventdata, handles)
 	pause(0.1);
 	delete(hObject);
 %--------------------------------------------------------------------------
-
+%--------------------------------------------------------------------------
+% debug things
+function debugButton_Callback(hObject, eventdata, handles)
+    keyboard
+%--------------------------------------------------------------------------
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -728,7 +757,7 @@ function CloseRequestFcn(hObject, eventdata, handles)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %--------------------------------------------------------------------------
-function FreqVal_CreateFcn(hObject, eventdata, handles)
+function FreqVal_CreateFcn(hObject, eventdata, handles) %#ok<*INUSD>
 	if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
 		set(hObject,'BackgroundColor','white');
 	end
@@ -814,4 +843,50 @@ function MicFRPathCtrl_CreateFcn(hObject, eventdata, handles)
 		 set(hObject,'BackgroundColor','white');
 	end
 %-------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------
+%-------------------------------------------------------------------------
+function update_GUI_from_cal(handles)
+	%------------------------------------------------------------
+	% update user interface
+	%------------------------------------------------------------
+	update_ui_str(handles.Fmin, handles.cal.Fmin);
+	update_ui_str(handles.Fmax, handles.cal.Fmax);
+	update_ui_str(handles.Fstep, handles.cal.Fstep);
+	update_ui_str(handles.Minlevel, handles.cal.Minlevel);
+	update_ui_str(handles.Maxlevel, handles.cal.Maxlevel);
+	update_ui_str(handles.AttenStep, handles.cal.AttenStep);
+	update_ui_str(handles.Nreps, handles.cal.Nreps);
+	update_ui_str(handles.ISI, handles.cal.ISI);
+	update_ui_val(handles.Side, handles.cal.Side);
+	update_ui_val(handles.AutoSave, handles.cal.AutoSave);
+	update_ui_val(handles.CheckCalCtrl, handles.cal.CheckCal + 1);
+	update_ui_val(handles.AttenFixCtrl, handles.cal.AttenFix);
+	update_ui_str(handles.AttenFixValueCtrl, handles.cal.AttenFixValue);
+	set(handles.AttenFixCtrl, 'HitTest', 'on');
+	set(handles.AttenFixCtrl, 'Enable', 'on');
+	set(handles.AttenFixCtrl, 'Visible', 'on');
+	if handles.cal.AttenFix
+		set(handles.AttenFixValueCtrl, 'HitTest', 'on');
+		set(handles.AttenFixValueCtrl, 'Enable', 'on');
+		set(handles.AttenFixValueCtrl, 'Visible', 'on');
+		set(handles.AttenFixValueCtrlText, 'HitTest', 'off');
+		set(handles.AttenFixValueCtrlText, 'Enable', 'on');
+		set(handles.AttenFixValueCtrlText, 'Visible', 'on');
+	else
+		set(handles.AttenFixValueCtrl, 'HitTest', 'off');
+		set(handles.AttenFixValueCtrl, 'Enable', 'on');
+		set(handles.AttenFixValueCtrl, 'Visible', 'off');
+		set(handles.AttenFixValueCtrlText, 'HitTest', 'off');
+		set(handles.AttenFixValueCtrlText, 'Enable', 'off');
+		set(handles.AttenFixValueCtrlText, 'Visible', 'off');
+	end
+	update_ui_val(handles.UseFRCtrl, handles.cal.UseFR);
+	update_ui_str(handles.MicFRPathCtrl, handles.cal.mic_fr_path);
+	update_ui_str(handles.MicFRFileCtrl, handles.cal.mic_fr_file);
+	update_ui_str(handles.StimAmplitude, handles.cal.StimAmplitude);
+	update_ui_str(handles.MicSensitivity, handles.cal.MicSensitivity);
+%-------------------------------------------------------------------------
+%-------------------------------------------------------------------------
+
 

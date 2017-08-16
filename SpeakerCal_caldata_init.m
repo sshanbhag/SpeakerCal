@@ -12,6 +12,8 @@
 % Created: 1 March, 2012, branched from HeadphoneCal
 %
 % Revisions:
+%	16 Aug 2017 (SJS): troubleshooting amplitude miscalibration
+%		- cleaning up some things, adding comments
 %--------------------------------------------------------------------------
 
 %---------------------------------------------------------------
@@ -26,11 +28,11 @@ caldata.daFc = iodev.Fs;							% analog output rate
 caldata.nrasters = Nfreqs;							% number of freqs to collect
 caldata.range = F;									% freq range (matlab string)
 caldata.reps = cal.Nreps;							% reps per frequency
-caldata.settings = cal;
+caldata.settings = cal;								% overall cal settings
 caldata.atten = cal.StartAtten;					% initial attenuator setting
 caldata.max_spl = cal.Maxlevel;					% maximum spl
 caldata.min_spl = cal.Minlevel;					% minimum spl
-caldata.frfile = '';
+caldata.frfile = '';									% fr frequency response file
 
 % set up the arrays to hold the data
 Nchannels = 2;
@@ -52,6 +54,7 @@ caldata.phase_stderr = tmparr;
 %---------------------------------------------------------------
 %---------------------------------------------------------------
 if ~exist('frdata', 'var')
+	% !!! not sure if this part is really needed!
 	frdata.lmagadjval = ones(size(caldata.freq));
 	frdata.rmagadjval = ones(size(caldata.freq));
 	frdata.lphiadjval = zeros(size(caldata.freq));
